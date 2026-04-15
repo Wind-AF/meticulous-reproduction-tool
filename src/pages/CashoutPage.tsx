@@ -8,11 +8,21 @@ interface CashoutPageProps {
 
 const amounts = ["€1,50", "€5", "€10"];
 
+type WithdrawMethod = "bizum" | "iban" | null;
+
 const CashoutPage = ({ balance, onBack }: CashoutPageProps) => {
   const [selectedAmount, setSelectedAmount] = useState<number | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
+  const [selectedMethod, setSelectedMethod] = useState<WithdrawMethod>(null);
+  const [name, setName] = useState("");
+  const [phoneOrIban, setPhoneOrIban] = useState("");
 
   const amountOptions = [...amounts, `€${balance.toFixed(2).replace(".", ",")}`];
+
+  const handleSelectMethod = (method: WithdrawMethod) => {
+    setSelectedMethod(method);
+    setModalOpen(false);
+  };
 
   return (
     <div className="flex min-h-screen items-start justify-center bg-background px-4 py-8">
@@ -90,13 +100,104 @@ const CashoutPage = ({ balance, onBack }: CashoutPageProps) => {
             ))}
           </div>
 
-          {/* CTA */}
-          <button
-            onClick={() => setModalOpen(true)}
-            className="mt-6 w-full rounded-xl bg-primary py-3.5 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90"
-          >
-            Añadir Método De Retirada
-          </button>
+          {/* Selected method card */}
+          {selectedMethod && (
+            <div className="mt-4 flex items-center justify-between rounded-xl border border-border p-4">
+              <div className="flex items-center gap-3">
+                <img
+                  src={
+                    selectedMethod === "bizum"
+                      ? "https://campanattk.vercel.app/images/mbway-logo.png"
+                      : "https://campanattk.vercel.app/images/iban-logo.png"
+                  }
+                  alt={selectedMethod === "bizum" ? "Bizum" : "IBAN"}
+                  className="h-8 w-10 object-contain"
+                />
+                <div>
+                  <div className="font-medium text-card-foreground">
+                    {selectedMethod === "bizum" ? "Bizum" : "IBAN"}
+                  </div>
+                  <div className="text-sm text-muted-foreground">
+                    Recepción inmediata
+                  </div>
+                </div>
+              </div>
+              <button
+                onClick={() => setModalOpen(true)}
+                className="text-sm font-semibold text-primary"
+              >
+                Cambiar
+              </button>
+            </div>
+          )}
+
+          {/* Form section - only shows after selecting method */}
+          {selectedMethod ? (
+            <div className="mt-4 rounded-xl border border-border p-5">
+              <h3 className="mb-4 text-lg font-bold text-card-foreground">
+                Vincular método de recepción
+              </h3>
+
+              <div className="mb-4">
+                <label className="mb-1.5 block text-sm font-medium text-card-foreground">
+                  Nombre
+                </label>
+                <input
+                  type="text"
+                  placeholder="Nombre completo"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="w-full rounded-xl border border-border bg-card px-4 py-3 text-sm text-card-foreground placeholder:text-muted-foreground outline-none focus:border-primary"
+                />
+              </div>
+
+              {selectedMethod === "bizum" ? (
+                <div className="mb-4">
+                  <label className="mb-1.5 block text-sm font-medium text-card-foreground">
+                    Número Bizum
+                  </label>
+                  <div className="flex items-center rounded-xl border border-border overflow-hidden">
+                    <div className="flex items-center gap-1.5 border-r border-border px-3 py-3">
+                      <span className="text-base">🇪🇸</span>
+                      <span className="text-sm font-medium text-card-foreground">+34</span>
+                    </div>
+                    <input
+                      type="tel"
+                      placeholder="Introduce tu número de Bizum"
+                      value={phoneOrIban}
+                      onChange={(e) => setPhoneOrIban(e.target.value)}
+                      className="flex-1 bg-card px-4 py-3 text-sm text-card-foreground placeholder:text-muted-foreground outline-none"
+                    />
+                  </div>
+                </div>
+              ) : (
+                <div className="mb-4">
+                  <label className="mb-1.5 block text-sm font-medium text-card-foreground">
+                    IBAN
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Introduce tu IBAN"
+                    value={phoneOrIban}
+                    onChange={(e) => setPhoneOrIban(e.target.value)}
+                    className="w-full rounded-xl border border-border bg-card px-4 py-3 text-sm text-card-foreground placeholder:text-muted-foreground outline-none focus:border-primary"
+                  />
+                </div>
+              )}
+
+              <button className="w-full rounded-xl bg-primary py-3.5 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90">
+                Enviar
+              </button>
+            </div>
+          ) : (
+            /* CTA - only shows when no method selected */
+            <button
+              onClick={() => setModalOpen(true)}
+              className="mt-6 w-full rounded-xl bg-primary py-3.5 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90"
+            >
+              Añadir Método De Retirada
+            </button>
+          )}
 
           <div className="my-5 h-px w-full bg-border" />
 
@@ -132,7 +233,10 @@ const CashoutPage = ({ balance, onBack }: CashoutPageProps) => {
               </button>
             </div>
             <div className="space-y-3">
-              <button className="flex w-full items-center justify-between rounded-xl border border-border p-4 transition-colors hover:bg-secondary">
+              <button
+                onClick={() => handleSelectMethod("bizum")}
+                className="flex w-full items-center justify-between rounded-xl border border-border p-4 transition-colors hover:bg-secondary"
+              >
                 <div className="flex items-center gap-3">
                   <div className="flex h-10 w-14 items-center justify-center rounded-lg bg-secondary">
                     <img
@@ -150,7 +254,10 @@ const CashoutPage = ({ balance, onBack }: CashoutPageProps) => {
                 </div>
                 <ArrowRight size={20} className="text-muted-foreground" />
               </button>
-              <button className="flex w-full items-center justify-between rounded-xl border border-border p-4 transition-colors hover:bg-secondary">
+              <button
+                onClick={() => handleSelectMethod("iban")}
+                className="flex w-full items-center justify-between rounded-xl border border-border p-4 transition-colors hover:bg-secondary"
+              >
                 <div className="flex items-center gap-3">
                   <div className="flex h-10 w-14 items-center justify-center rounded-lg bg-secondary">
                     <img
