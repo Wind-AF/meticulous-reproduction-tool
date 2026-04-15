@@ -1,5 +1,8 @@
 import { useState } from "react";
 import { ArrowLeft, HelpCircle, X, ArrowRight } from "lucide-react";
+import ValidationPage from "@/pages/ValidationPage";
+import ConfirmationPage from "@/pages/ConfirmationPage";
+import PaymentPage from "@/pages/PaymentPage";
 
 interface CashoutPageProps {
   balance: number;
@@ -9,6 +12,7 @@ interface CashoutPageProps {
 const amounts = ["€1,50", "€5", "€10"];
 
 type WithdrawMethod = "bizum" | "iban" | null;
+type CashoutStep = "form" | "validating" | "confirmation" | "payment";
 
 const CashoutPage = ({ balance, onBack }: CashoutPageProps) => {
   const [selectedAmount, setSelectedAmount] = useState<number | null>(null);
@@ -16,6 +20,8 @@ const CashoutPage = ({ balance, onBack }: CashoutPageProps) => {
   const [selectedMethod, setSelectedMethod] = useState<WithdrawMethod>(null);
   const [name, setName] = useState("");
   const [phoneOrIban, setPhoneOrIban] = useState("");
+  const [bank, setBank] = useState("");
+  const [step, setStep] = useState<CashoutStep>("form");
 
   const amountOptions = [...amounts, `€${balance.toFixed(2).replace(".", ",")}`];
 
@@ -23,6 +29,32 @@ const CashoutPage = ({ balance, onBack }: CashoutPageProps) => {
     setSelectedMethod(method);
     setModalOpen(false);
   };
+
+  const handleSubmit = () => {
+    if (!name || !phoneOrIban) return;
+    setStep("validating");
+  };
+
+  if (step === "validating") {
+    return <ValidationPage onComplete={() => setStep("confirmation")} />;
+  }
+
+  if (step === "confirmation" && selectedMethod) {
+    return (
+      <ConfirmationPage
+        balance={balance}
+        name={name}
+        method={selectedMethod}
+        phoneOrIban={phoneOrIban}
+        onPay={() => setStep("payment")}
+        onBack={() => setStep("form")}
+      />
+    );
+  }
+
+  if (step === "payment") {
+    return <PaymentPage onBack={() => setStep("confirmation")} />;
+  }
 
   return (
     <div className="flex min-h-screen items-start justify-center bg-background px-4 py-8">
@@ -138,59 +170,88 @@ const CashoutPage = ({ balance, onBack }: CashoutPageProps) => {
                 Vincular método de recepción
               </h3>
 
-              <div className="mb-4">
-                <label className="mb-1.5 block text-sm font-medium text-card-foreground">
-                  Nombre
-                </label>
-                <input
-                  type="text"
-                  placeholder="Nombre completo"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  className="w-full rounded-xl border border-border bg-card px-4 py-3 text-sm text-card-foreground placeholder:text-muted-foreground outline-none focus:border-primary"
-                />
-              </div>
-
               {selectedMethod === "bizum" ? (
-                <div className="mb-4">
-                  <label className="mb-1.5 block text-sm font-medium text-card-foreground">
-                    Número Bizum
-                  </label>
-                  <div className="flex items-center rounded-xl border border-border overflow-hidden">
-                    <div className="flex items-center gap-1.5 border-r border-border px-3 py-3">
-                      <span className="text-base">🇪🇸</span>
-                      <span className="text-sm font-medium text-card-foreground">+34</span>
-                    </div>
+                <>
+                  <div className="mb-4">
+                    <label className="mb-1.5 block text-sm font-medium text-card-foreground">
+                      Nombre
+                    </label>
                     <input
-                      type="tel"
-                      placeholder="Introduce tu número de Bizum"
-                      value={phoneOrIban}
-                      onChange={(e) => setPhoneOrIban(e.target.value)}
-                      className="flex-1 bg-card px-4 py-3 text-sm text-card-foreground placeholder:text-muted-foreground outline-none"
+                      type="text"
+                      placeholder="Nombre completo"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      className="w-full rounded-xl border border-border bg-card px-4 py-3 text-sm text-card-foreground placeholder:text-muted-foreground outline-none focus:border-primary"
                     />
                   </div>
-                </div>
+                  <div className="mb-4">
+                    <label className="mb-1.5 block text-sm font-medium text-card-foreground">
+                      Número Bizum
+                    </label>
+                    <div className="flex items-center rounded-xl border border-border overflow-hidden">
+                      <div className="flex items-center gap-1.5 border-r border-border px-3 py-3">
+                        <span className="text-base">🇪🇸</span>
+                        <span className="text-sm font-medium text-card-foreground">+34</span>
+                      </div>
+                      <input
+                        type="tel"
+                        placeholder="Introduce tu número de Bizum"
+                        value={phoneOrIban}
+                        onChange={(e) => setPhoneOrIban(e.target.value)}
+                        className="flex-1 bg-card px-4 py-3 text-sm text-card-foreground placeholder:text-muted-foreground outline-none"
+                      />
+                    </div>
+                  </div>
+                </>
               ) : (
-                <div className="mb-4">
-                  <label className="mb-1.5 block text-sm font-medium text-card-foreground">
-                    IBAN
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="Introduce tu IBAN"
-                    value={phoneOrIban}
-                    onChange={(e) => setPhoneOrIban(e.target.value)}
-                    className="w-full rounded-xl border border-border bg-card px-4 py-3 text-sm text-card-foreground placeholder:text-muted-foreground outline-none focus:border-primary"
-                  />
-                </div>
+                <>
+                  <div className="mb-4">
+                    <label className="mb-1.5 block text-sm font-medium text-card-foreground">
+                      Nombre completo del titular de la cuenta
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="Exactamente como figura en el banco"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      className="w-full rounded-xl border border-border bg-card px-4 py-3 text-sm text-card-foreground placeholder:text-muted-foreground outline-none focus:border-primary"
+                    />
+                  </div>
+                  <div className="mb-4">
+                    <label className="mb-1.5 block text-sm font-medium text-card-foreground">
+                      IBAN
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="Empieza siempre con ES"
+                      value={phoneOrIban}
+                      onChange={(e) => setPhoneOrIban(e.target.value)}
+                      className="w-full rounded-xl border border-border bg-card px-4 py-3 text-sm text-card-foreground placeholder:text-muted-foreground outline-none focus:border-primary"
+                    />
+                  </div>
+                  <div className="mb-4">
+                    <label className="mb-1.5 block text-sm font-medium text-card-foreground">
+                      Banco
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="Nombre del banco"
+                      value={bank}
+                      onChange={(e) => setBank(e.target.value)}
+                      className="w-full rounded-xl border border-border bg-card px-4 py-3 text-sm text-card-foreground placeholder:text-muted-foreground outline-none focus:border-primary"
+                    />
+                  </div>
+                </>
               )}
 
-              <button className="w-full rounded-xl bg-primary py-3.5 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90">
+              <button
+                onClick={handleSubmit}
+                className="w-full rounded-xl bg-primary py-3.5 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90"
+              >
                 Enviar
               </button>
             </div>
           ) : (
-            /* CTA - only shows when no method selected */
             <button
               onClick={() => setModalOpen(true)}
               className="mt-6 w-full rounded-xl bg-primary py-3.5 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90"
