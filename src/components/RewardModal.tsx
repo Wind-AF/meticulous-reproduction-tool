@@ -23,6 +23,7 @@ const RewardModal = ({ isOpen, reward, onContinue }: RewardModalProps) => {
   }, [isOpen, reward]);
 
   useEffect(() => {
+    if (isOpen) {
       const duration = 2000;
       const end = Date.now() + duration;
       const frame = () => {
