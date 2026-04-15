@@ -1,4 +1,5 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { useAnimatedCounter } from "@/hooks/useAnimatedCounter";
 import confetti from "canvas-confetti";
 
 interface RewardModalProps {
