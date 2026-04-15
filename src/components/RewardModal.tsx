@@ -1,4 +1,5 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { useAnimatedCounter } from "@/hooks/useAnimatedCounter";
 import confetti from "canvas-confetti";
 
 interface RewardModalProps {
@@ -8,6 +9,19 @@ interface RewardModalProps {
 }
 
 const RewardModal = ({ isOpen, reward, onContinue }: RewardModalProps) => {
+  const [animTarget, setAnimTarget] = useState(0);
+  const displayReward = useAnimatedCounter(animTarget, 1200);
+
+  useEffect(() => {
+    if (isOpen) {
+      setAnimTarget(0);
+      // Small delay to reset then animate
+      requestAnimationFrame(() => setAnimTarget(reward));
+    } else {
+      setAnimTarget(0);
+    }
+  }, [isOpen, reward]);
+
   useEffect(() => {
     if (isOpen) {
       const duration = 2000;
@@ -41,7 +55,7 @@ const RewardModal = ({ isOpen, reward, onContinue }: RewardModalProps) => {
         <h2 className="text-xl font-bold text-primary">Nueva recompensa</h2>
         <p className="mt-2 text-sm text-card-foreground">Has ganado</p>
         <p className="my-3 text-5xl font-extrabold text-primary">
-          €{reward.toFixed(2)}
+          €{displayReward.toFixed(2)}
         </p>
         <p className="text-sm text-muted-foreground">
           Responde a más encuestas
