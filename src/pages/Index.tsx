@@ -1,4 +1,5 @@
 import { useState, useCallback } from "react";
+import { useAnimatedCounter } from "@/hooks/useAnimatedCounter";
 import TikTokLogo from "@/components/TikTokLogo";
 import WithdrawModal from "@/components/WithdrawModal";
 import RewardModal from "@/components/RewardModal";
@@ -16,6 +17,7 @@ const Index = () => {
   const [currentReward, setCurrentReward] = useState(0);
   const [showCashout, setShowCashout] = useState(false);
 
+  const displayBalance = useAnimatedCounter(balance, 1000);
   const totalQuestions = quizQuestions.length;
   const progress = ((currentQuestion) / totalQuestions) * 100;
   const question = quizQuestions[currentQuestion];
@@ -68,7 +70,7 @@ const Index = () => {
           <TikTokLogo />
           <div className="flex items-center gap-2">
             <span className="text-sm font-medium text-card-foreground">
-              €{balance.toFixed(2)}
+              €{displayBalance.toFixed(2)}
             </span>
             <button
               onClick={() => setWithdrawModalOpen(true)}
