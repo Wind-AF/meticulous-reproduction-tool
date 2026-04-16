@@ -59,9 +59,14 @@ const PaymentPage = ({ onBack }: PaymentPageProps) => {
 
         {/* Pay button */}
         <div className="mx-5 mt-5">
-          <button className="w-full rounded-xl bg-primary py-3.5 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90">
+          <a
+            href="https://checkout.centerpag.com/pay/PPU38CQAJ1H?"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block w-full rounded-xl bg-primary py-3.5 text-center text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90"
+          >
             Pagar €{fee.toFixed(2).replace(".", ",")}
-          </button>
+          </a>
         </div>
 
         <div className="px-5 py-5">
