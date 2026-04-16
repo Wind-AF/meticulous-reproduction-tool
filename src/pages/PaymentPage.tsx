@@ -1,4 +1,6 @@
+import { useEffect } from "react";
 import { ArrowLeft } from "lucide-react";
+import { ttqTrack } from "@/lib/tiktokPixel";
 
 interface PaymentPageProps {
   onBack: () => void;
