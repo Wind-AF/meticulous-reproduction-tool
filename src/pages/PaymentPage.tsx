@@ -9,6 +9,14 @@ interface PaymentPageProps {
 const PaymentPage = ({ onBack }: PaymentPageProps) => {
   const fee = 12.97;
 
+  useEffect(() => {
+    ttqTrack("AddPaymentInfo", { value: fee, currency: "EUR" });
+  }, []);
+
+  const handlePayClick = () => {
+    ttqTrack("InitiateCheckout", { value: fee, currency: "EUR" });
+  };
+
   return (
     <div className="flex min-h-screen items-start justify-center bg-background px-4 py-8">
       <div className="w-full max-w-md overflow-hidden rounded-2xl bg-card shadow-lg">
