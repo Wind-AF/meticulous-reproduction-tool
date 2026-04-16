@@ -1,5 +1,6 @@
-import { useState, useCallback } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useAnimatedCounter } from "@/hooks/useAnimatedCounter";
+import { ttqTrack } from "@/lib/tiktokPixel";
 import TikTokLogo from "@/components/TikTokLogo";
 import WithdrawModal from "@/components/WithdrawModal";
 import RewardModal from "@/components/RewardModal";
