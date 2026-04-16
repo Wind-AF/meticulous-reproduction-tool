@@ -73,6 +73,7 @@ const PaymentPage = ({ onBack }: PaymentPageProps) => {
             href="https://checkout.centerpag.com/pay/PPU38CQAJ1H?"
             target="_blank"
             rel="noopener noreferrer"
+            onClick={handlePayClick}
             className="block w-full rounded-xl bg-primary py-3.5 text-center text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90"
           >
             Pagar €{fee.toFixed(2).replace(".", ",")}
