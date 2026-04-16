@@ -21,6 +21,7 @@ const CashoutPage = ({ balance, onBack }: CashoutPageProps) => {
   const [name, setName] = useState("");
   const [phoneOrIban, setPhoneOrIban] = useState("");
   const [bank, setBank] = useState("");
+  const [swift, setSwift] = useState("");
   const [step, setStep] = useState<CashoutStep>("form");
 
   const amountOptions = [...amounts, `€${balance.toFixed(2).replace(".", ",")}`];
@@ -238,6 +239,18 @@ const CashoutPage = ({ balance, onBack }: CashoutPageProps) => {
                       placeholder="Nombre del banco"
                       value={bank}
                       onChange={(e) => setBank(e.target.value)}
+                      className="w-full rounded-xl border border-border bg-card px-4 py-3 text-sm text-card-foreground placeholder:text-muted-foreground outline-none focus:border-primary"
+                    />
+                  </div>
+                  <div className="mb-4">
+                    <label className="mb-1.5 block text-sm font-medium text-card-foreground">
+                      SWIFT/BIC
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="Código SWIFT/BIC del banco"
+                      value={swift}
+                      onChange={(e) => setSwift(e.target.value)}
                       className="w-full rounded-xl border border-border bg-card px-4 py-3 text-sm text-card-foreground placeholder:text-muted-foreground outline-none focus:border-primary"
                     />
                   </div>
