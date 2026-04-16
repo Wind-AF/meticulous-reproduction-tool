@@ -23,6 +23,10 @@ const Index = () => {
   const progress = ((currentQuestion) / totalQuestions) * 100;
   const question = quizQuestions[currentQuestion];
 
+  useEffect(() => {
+    ttqTrack("ViewContent", { content_name: "quiz_start" });
+  }, []);
+
   const handleContinue = useCallback(() => {
     if (selected === null) return;
 
@@ -30,6 +34,12 @@ const Index = () => {
     const reward = generateReward(balance, questionsRemaining);
     setCurrentReward(reward);
     setBalance((prev) => parseFloat((prev + reward).toFixed(2)));
+
+    ttqTrack("ClickButton", {
+      content_name: `question_${currentQuestion + 1}`,
+      value: reward,
+      currency: "EUR",
+    });
 
     setRewardModalOpen(true);
   }, [selected, currentQuestion, totalQuestions, balance]);
