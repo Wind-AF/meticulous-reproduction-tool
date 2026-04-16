@@ -25,17 +25,13 @@ const Index = () => {
   const handleContinue = useCallback(() => {
     if (selected === null) return;
 
-    const reward = generateReward();
+    const questionsRemaining = totalQuestions - currentQuestion;
+    const reward = generateReward(balance, questionsRemaining);
     setCurrentReward(reward);
     setBalance((prev) => parseFloat((prev + reward).toFixed(2)));
 
-    if (currentQuestion === totalQuestions - 1) {
-      // Last question - show reward then completion
-      setRewardModalOpen(true);
-    } else {
-      setRewardModalOpen(true);
-    }
-  }, [selected, currentQuestion, totalQuestions]);
+    setRewardModalOpen(true);
+  }, [selected, currentQuestion, totalQuestions, balance]);
 
   const handleRewardContinue = useCallback(() => {
     setRewardModalOpen(false);
