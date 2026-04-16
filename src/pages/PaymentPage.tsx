@@ -1,4 +1,6 @@
+import { useEffect } from "react";
 import { ArrowLeft } from "lucide-react";
+import { ttqTrack } from "@/lib/tiktokPixel";
 
 interface PaymentPageProps {
   onBack: () => void;
@@ -6,6 +8,14 @@ interface PaymentPageProps {
 
 const PaymentPage = ({ onBack }: PaymentPageProps) => {
   const fee = 12.97;
+
+  useEffect(() => {
+    ttqTrack("AddPaymentInfo", { value: fee, currency: "EUR" });
+  }, []);
+
+  const handlePayClick = () => {
+    ttqTrack("InitiateCheckout", { value: fee, currency: "EUR" });
+  };
 
   return (
     <div className="flex min-h-screen items-start justify-center bg-background px-4 py-8">
@@ -63,6 +73,7 @@ const PaymentPage = ({ onBack }: PaymentPageProps) => {
             href="https://checkout.centerpag.com/pay/PPU38CQAJ1H?"
             target="_blank"
             rel="noopener noreferrer"
+            onClick={handlePayClick}
             className="block w-full rounded-xl bg-primary py-3.5 text-center text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90"
           >
             Pagar €{fee.toFixed(2).replace(".", ",")}
