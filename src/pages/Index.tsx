@@ -57,8 +57,9 @@ const Index = () => {
 
   const handleClaim = useCallback(() => {
     setCompletionModalOpen(false);
+    ttqTrack("CompleteRegistration", { value: balance, currency: "EUR" });
     setShowCashout(true);
-  }, []);
+  }, [balance]);
 
   if (showCashout) {
     return (
