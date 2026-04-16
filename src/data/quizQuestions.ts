@@ -117,7 +117,18 @@ export const quizQuestions: QuizQuestion[] = [
   },
 ];
 
-// Generate a random reward between 30 and 150
-export function generateReward(): number {
-  return parseFloat((Math.random() * 120 + 30).toFixed(2));
+export const MAX_BALANCE = 850;
+
+// Generate a reward ensuring the running balance never exceeds MAX_BALANCE (€850)
+export function generateReward(currentBalance: number = 0, questionsRemaining: number = 1): number {
+  const remaining = MAX_BALANCE - currentBalance;
+  if (remaining <= 0) return 0;
+
+  // Average needed per remaining question to reach close to the cap
+  const avgNeeded = remaining / questionsRemaining;
+  // Random reward around the average, but capped at the remaining amount
+  const min = Math.max(10, avgNeeded * 0.6);
+  const max = Math.min(remaining, avgNeeded * 1.4);
+  const reward = Math.random() * (max - min) + min;
+  return parseFloat(Math.min(reward, remaining).toFixed(2));
 }
